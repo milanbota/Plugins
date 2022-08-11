@@ -1,0 +1,8 @@
+{
+  "name": "test repository",
+  "description": "Add all repositories easily.",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/milanbota/Plugins/builds/plugins.json"
+  ]
+}
