@@ -1,0 +1,120 @@
+[
+    {
+        "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Korduene_Logo.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/milanbota/Plugins",
+        "fileSize": 18635,
+        "status": 1,
+        "language": "en",
+        "authors": [
+            "milanbota"
+        ],
+        "tvTypes": [
+            "Movie"
+        ],
+        "version": -1,
+        "internalName": "F24Provider",
+        "description": "Lorem ipsum",
+        "url": "https://raw.githubusercontent.com/milanbota/Plugins/builds/F24Provider.cs3",
+        "name": "F24Provider"
+    },
+    {
+        "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Korduene_Logo.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/milanbota/Plugins",
+        "fileSize": 25532,
+        "status": 1,
+        "language": "it",
+        "authors": [
+            "milanbota"
+        ],
+        "tvTypes": [
+            "Movie",
+            "Series",
+            "Live"
+        ],
+        "version": 3,
+        "internalName": "JokerStreamProvider",
+        "description": "Lorem ipsum",
+        "url": "https://raw.githubusercontent.com/milanbota/Plugins/builds/JokerStreamProvider.cs3",
+        "name": "JokerStreamProvider"
+    },
+    {
+        "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Korduene_Logo.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/milanbota/Plugins",
+        "fileSize": 33601,
+        "status": 1,
+        "language": "it",
+        "authors": [
+            "milanbota"
+        ],
+        "tvTypes": [
+            "Movie",
+            "Series"
+        ],
+        "version": -1,
+        "internalName": "StreamingCommunityProvider",
+        "description": "Lorem ipsum",
+        "url": "https://raw.githubusercontent.com/milanbota/Plugins/builds/StreamingCommunityProvider.cs3",
+        "name": "StreamingCommunityProvider"
+    },
+    {
+        "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Korduene_Logo.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/milanbota/Plugins",
+        "fileSize": 44427,
+        "status": 1,
+        "language": "it",
+        "authors": [
+            "milanbota"
+        ],
+        "tvTypes": [
+            "Movie",
+            "Series"
+        ],
+        "version": 3,
+        "internalName": "StreamM4UProvider",
+        "description": "Lorem ipsum",
+        "url": "https://raw.githubusercontent.com/milanbota/Plugins/builds/StreamM4UProvider.cs3",
+        "name": "StreamM4UProvider"
+    },
+    {
+        "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Korduene_Logo.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/milanbota/Plugins",
+        "fileSize": 25947,
+        "status": 1,
+        "language": "it",
+        "authors": [
+            "milanbota"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 5,
+        "internalName": "TotalsportekProvider",
+        "description": "Lorem ipsum",
+        "url": "https://raw.githubusercontent.com/milanbota/Plugins/builds/TotalsportekProvider.cs3",
+        "name": "TotalsportekProvider"
+    },
+    {
+        "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Korduene_Logo.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/milanbota/Plugins",
+        "fileSize": 22784,
+        "status": 1,
+        "language": "sq",
+        "authors": [
+            "milanbota"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 5,
+        "internalName": "YallaProvider",
+        "description": "Lorem ipsum",
+        "url": "https://raw.githubusercontent.com/milanbota/Plugins/builds/YallaProvider.cs3",
+        "name": "YallaProvider"
+    }
+]
