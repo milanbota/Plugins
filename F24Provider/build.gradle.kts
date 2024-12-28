@@ -11,7 +11,7 @@ cloudstream {
     // All of these properties are optional, you can safely remove them
 
     description = "Lorem ipsum"
-    authors = listOf("Cloudburst")
+    authors = listOf("milanbota")
 
     /**
     * Status int as the following:
