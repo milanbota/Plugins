@@ -5,5 +5,10 @@ rootProject.name = "CloudstreamPlugins"
 
 // Plugins are included like this
 include(
-    "F24Provider"
+    "F24Provider",
+    "StreamingCommunityProvider",
+    "StreamM4UProvider",
+    "JokerStreamProvider",
+    "TotalsportekProvider",
 )
+//include(":utils")

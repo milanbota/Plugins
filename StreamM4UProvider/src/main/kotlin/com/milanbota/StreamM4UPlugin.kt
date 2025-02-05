@@ -8,12 +8,15 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 
 @CloudstreamPlugin
-class F24Plugin: Plugin() {
+class StreamM4UPlugin: Plugin() {
     var activity: AppCompatActivity? = null
 
     override fun load(context: Context) {
         activity = context as AppCompatActivity
         // All providers should be added in this manner
-        registerMainAPI(F24Provider(this))
+        registerMainAPI(StreamM4UProvider())
+        registerExtractorAPI(PlayM4UExtractor())
+        registerExtractorAPI(PlayM4UExtractorF())
+        registerExtractorAPI(HiHiHeHeExtractor())
     }
 }
