@@ -12,24 +12,25 @@ cache:
 # Build stage
 build:
   stage: build
-  image: gradle:7.3-jdk11  # Using Gradle with JDK 11
+  image: eclipse-temurin:11.0.26_4-jdk-ubi9-minimal  # Using Gradle with JDK 11
   script:
-    - gradle clean build  # Adjust this if you need a different Gradle command
+    - chmod +x gradlew
+    - ./gradlew make makePluginsJson
   artifacts:
     paths:
-      - build/libs/*.jar  # Adjust this if your JAR files are in a different location
+      - "**/build/*.cs3"
     expire_in: 1 week
 
 # Deploy stage to upload artifacts to GitLab registry
-deploy:
-  stage: deploy
-  image: curlimages/curl:latest
-  script:
-    # Login to GitLab registry
-    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    # Tag the built image
-    - docker tag build/libs/*.jar $CI_REGISTRY_IMAGE:latest
-    # Push the image to GitLab registry
-    - docker push $CI_REGISTRY_IMAGE:latest
-  only:
-    - main  # Only deploy when changes are pushed to the main branch
+#deploy:
+#  stage: deploy
+#  image: curlimages/curl:latest
+#  script:
+#    # Login to GitLab registry
+#    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+#    # Tag the built image
+#    - docker tag build/libs/*.jar $CI_REGISTRY_IMAGE:latest
+#    # Push the image to GitLab registry
+#    - docker push $CI_REGISTRY_IMAGE:latest
+#  only:
+#    - main  # Only deploy when changes are pushed to the main branch
