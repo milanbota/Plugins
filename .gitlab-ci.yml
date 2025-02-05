@@ -12,7 +12,7 @@ cache:
 # Build stage
 build:
   stage: build
-  image: eclipse-temurin:17.0.14_7-jdk-ubi9-minimal  # Using Gradle with JDK 11
+  image: raatiniemi/android-environment:jdk-17-android-35-latest  # Using Gradle with JDK 11
   script:
     - chmod +x gradlew
     - ./gradlew make makePluginsJson
