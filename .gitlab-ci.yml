@@ -19,18 +19,17 @@ build:
   artifacts:
     paths:
       - "**/build/*.cs3"
+      - "**/build/plugins.json"
     expire_in: 1 week
 
 # Deploy stage to upload artifacts to GitLab registry
-#deploy:
-#  stage: deploy
-#  image: curlimages/curl:latest
-#  script:
-#    # Login to GitLab registry
-#    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-#    # Tag the built image
-#    - docker tag build/libs/*.jar $CI_REGISTRY_IMAGE:latest
-#    # Push the image to GitLab registry
-#    - docker push $CI_REGISTRY_IMAGE:latest
-#  only:
-#    - main  # Only deploy when changes are pushed to the main branch
+deploy:
+  stage: deploy
+  image: curlimages/curl:latest
+  script:
+    - ls -l build/
+    - ls -l
+  only:
+    - main  # Only deploy when changes are pushed to the main branch
+  dependencies:
+    - build
