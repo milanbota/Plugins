@@ -10,5 +10,6 @@ include(
     "StreamM4UProvider",
     "JokerStreamProvider",
     "TotalsportekProvider",
+    "YallaProvider"
 )
 //include(":utils")
