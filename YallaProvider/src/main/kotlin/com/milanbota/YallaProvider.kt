@@ -4,6 +4,9 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.fasterxml.jackson.annotation.*
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
@@ -18,49 +21,36 @@ import java.util.UUID
 
 data class MatchResponse(
     val id: String,
-    @JsonProperty("page_id")
-    val pageId: String,
+    @SerializedName("page_id") val pageId: String,
     val page: Long,
     val category: String,
     val sitemap: Long,
-    @JsonProperty("api_matche_id")
-    val apiMatcheId: String,
+    @SerializedName("api_matche_id") val apiMatcheId: String,
     val status: Long,
     val date: String,
     val time: String,
     val score: String,
-    @JsonProperty("home_score")
-    val homeScore: String,
-    @JsonProperty("away_score")
-    val awayScore: String,
+    @SerializedName("home_score") val homeScore: String,
+    @SerializedName("away_score") val awayScore: String,
     val league: String,
-    @JsonProperty("league_en")
-    val leagueEn: String,
-    @JsonProperty("league_logo")
-    val leagueLogo: String,
+    @SerializedName("league_en") val leagueEn: String,
+    @SerializedName("league_logo") val leagueLogo: String,
     val home: String,
-    @JsonProperty("home_en")
-    val homeEn: String,
-    @JsonProperty("home_logo")
+    @SerializedName("home_en") val homeEn: String,
+    @SerializedName("home_logo")
     val homeLogo: String,
     val away: String,
-    @JsonProperty("away_en")
-    val awayEn: String,
-    @JsonProperty("away_logo")
-    val awayLogo: String,
+    @SerializedName("away_en") val awayEn: String,
+    @SerializedName("away_logo") val awayLogo: String,
     val tv: String,
     val selected: String,
     val english: String,
-    @JsonProperty("has_channels")
-    val hasChannels: String,
+    @SerializedName("has_channels") val hasChannels: String,
     val event: String,
-    @JsonProperty("event_desc")
-    val eventDesc: String,
+    @SerializedName("event_desc") val eventDesc: String,
     val active: String,
-    @JsonProperty("redirect_url")
-    val redirectUrl: String,
-    @JsonProperty("redirect_domain_ids")
-    val redirectDomainIds: String,
+    @SerializedName("redirect_url") val redirectUrl: String,
+    @SerializedName("redirect_domain_ids") val redirectDomainIds: String,
 )
 
 
@@ -123,7 +113,7 @@ data class Channel (
     val ch: String,
     val name: String,
     val baseUrl: String,
-    val pParam: String
+    val pParam: String = "12"
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -161,18 +151,18 @@ class YallaProvider : MainAPI() {
     private val headers = mapOf("user-agent" to userAgent)
 
     override val mainPage = mainPageOf(
-        "$mainUrl/" to "Matches",
+        "$mainUrl/" to "Live Matches",
     )
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun MatchResponse.toSearchResponse() : SearchResponse{
         val ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
         return LiveSearchResponse(
-            "${this.date} - ${this.homeEn} - ${this.awayEn}",
+            "${this.time} - ${this.homeEn} - ${this.awayEn}",
             url = "https://ws.kora-api.top/api/matche/${this.id}/en?t=$ts" ,
             apiName = "Yalla",
             type = TvType.Live,
-            posterUrl = "https://ws.kora-api.top/uploads/team/${this.homeLogo}",
+            posterUrl = "https://ws.kora-api.top/uploads/league/${this.leagueLogo}",
             id = 1,
         )
     }
@@ -181,12 +171,20 @@ class YallaProvider : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val dt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val url = "$mainUrl/matches/$dt"
-        val events = app.get(url, headers=headers).parsedSafe<List<MatchResponse>>()
-        val matches = events?.map {
-            it.toSearchResponse()
-        }
+        val eventz = app.get(url, headers=headers)
 
-        return newHomePageResponse(request.name, matches?: emptyList(), hasNext = false)
+        val listMatchResponses = object : TypeToken<List<MatchResponse>>() {}.type
+        val events : List<MatchResponse> = Gson().fromJson(eventz.text, listMatchResponses)
+        Log.d("YallaProviderz", "event => $events")
+        val matches = events.map {
+            if (it.hasChannels != "0"){
+                return@map it.toSearchResponse()
+            }else{
+                return@map null
+            }
+        }.filterNotNull()
+
+        return newHomePageResponse(request.name, matches, hasNext = false)
     }
 
 
@@ -196,20 +194,23 @@ class YallaProvider : MainAPI() {
         val newurl = "https://shoot-yalla.co/live/${match.id}/${match.apiMatcheId}/${match.desc.replace(' ', '-').lowercase()}"
 
         val matchs = app.get(newurl, headers = headers).document
-        val d = matchs.selectFirst("script:containsData('u_key')")?.data()?:""
+        val d = matchs.selectFirst("script:containsData(u_key)")?.data()?:""
+
         val key = """var\s+u_key\s+=\s*[\"'](.*?)[\"']""".toRegex().find(d)
         val iframeUrlEncoded = key?.groupValues?.get(1)?:""
         val iframeUrl = decodeToken(iframeUrlEncoded)
 
         val pData = """var\s+p\s+=\s*(.*?);""".toRegex().find(d)
         val p = pData?.groupValues?.get(1)?:""
+        Log.d("YallaProviderzz", "Loading pParam $p")
+
 
         val channels = match.channels.map {
             Channel(
                 it.ch,
                 it.serverNameEn,
                 iframeUrl,
-                p
+                pParam = p
             )
         }
 
@@ -220,8 +221,8 @@ class YallaProvider : MainAPI() {
             url = url,
             dataUrl = channels.toJson(),
             apiName = name,
-            backgroundPosterUrl = "",
-            plot = ""
+            backgroundPosterUrl = "https://ws.kora-api.top/uploads/league/${match.leagueLogo}",
+            plot = "Score: ${match.score}"
         )
     }
 
@@ -229,7 +230,8 @@ class YallaProvider : MainAPI() {
     suspend fun getVideoLink(channel: Channel) : ExtractorLink? {
         val headerz = headers + mapOf("Referer" to "https://shoot-yalla.co/")
         val data = app.get(channel.getIframeUrl(), headers=headerz).text
-        val key = """var\s+u_key\s+=\s*[\"'](.*?)[\"']""".toRegex().find(data)
+
+        val key = """var\s+token\s+=\s*[\"'](.*?)[\"']""".toRegex().find(data)
         val encodedUrl = key?.groupValues?.get(1)?: return null
         val url = decodeToken(encodedUrl)
 
@@ -252,7 +254,7 @@ class YallaProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val links = parseJson<List<Channel>>(data)
-        Log.d("TotalSportekData", "Loading links $links")
+
 
         links.amap {
             getVideoLink(it)

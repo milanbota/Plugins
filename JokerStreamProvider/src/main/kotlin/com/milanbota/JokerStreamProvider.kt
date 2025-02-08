@@ -127,7 +127,7 @@ class JokerStreamProvider : MainAPI() {
         val volleyballMatches = events.filter { it.sport == "Volleyball" }.sortedBy { it.date }.map { it.toSearchResponse() }
         val tennisMatches = events.filter { it.sport == "Tennis" }.sortedBy { it.date }.map { it.toSearchResponse() }
 
-        val football = HomePageList("Football", footballMatches, isHorizontalImages = true)
+        val football = HomePageList("Football", footballMatches)
         val basketball = HomePageList("Basketball", basketballMatches)
         val volleyball = HomePageList("Volleyball", volleyballMatches)
         val tennis = HomePageList("Tennis", tennisMatches)
