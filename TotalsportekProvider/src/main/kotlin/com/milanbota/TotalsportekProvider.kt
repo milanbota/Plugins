@@ -196,7 +196,7 @@ val finalExtractors = listOf<FinalExtractor>(
     Techydeals(),
     Foreverquote(),
     Dynamicfantasy(),
-    Livesnow()
+//    Livesnow()
 
 )
 
