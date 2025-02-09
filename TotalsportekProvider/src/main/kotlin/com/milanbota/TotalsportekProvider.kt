@@ -141,7 +141,8 @@ class TotalsportekProvider : MainAPI() {
             dataUrl = channels.toJson(),
             apiName = name,
             backgroundPosterUrl = posterUrl,
-            plot = " $status <br/> $chList"
+//            plot = " $status <br/> $chList"
+            plot = " $status <br/>"
         )
     }
 
@@ -189,9 +190,9 @@ val finalExtractors = listOf<FinalExtractor>(
     CookieWebPlay(),
     Nativesurge(),
     PapaPlay(),
-    Gameavenue(),
+//    Gameavenue(),
     Freelivestreamhd(),
-    Flstvonline(),
+//    Flstvonline(),
     Livestreams(),
     Kingstreamz(),
     Techydeals(),
@@ -216,6 +217,7 @@ open class Livesnow: FinalExtractorImpl() {
 
         return VideoLink(
             "http:${videoUrl}",
+            "${baseUrl}",
             "http://livesnow.me/",
             "http://livesnow.me"
         )
@@ -256,6 +258,7 @@ class Gameavenue: SimpleSourceExtractor() {
 
         return VideoLink(
             videoUrl,
+            "${baseUrl}",
             iFrameData.finalUrl,
             iFrameData.finalUrl
         )
@@ -283,6 +286,7 @@ open class Forgepattern: FinalExtractorImpl() {
 
         return VideoLink(
             videoUrl,
+            "${baseUrl}",
             iFrameData.finalUrl,
             iFrameData.finalUrl
         )
@@ -303,6 +307,7 @@ class Redditf: SimpleAtobExtractor() {
 
         return VideoLink(
             videoUrl,
+            "${baseUrl}",
             iFrameData.finalUrl,
             iFrameData.finalUrl
         )
@@ -323,6 +328,7 @@ class Techabal: FinalExtractorImpl() {
 
         return VideoLink(
             videoUrl,
+            "${this.baseUrl}",
             iFrameData.finalUrl,
             iFrameData.finalUrl
         )
@@ -351,6 +357,7 @@ class Givemereddit: FinalExtractorImpl() {
 
         return VideoLink(
             videoUrl,
+            "${baseUrl}",
             iFrameData.finalUrl,
             iFrameData.finalUrl
         )
@@ -383,6 +390,7 @@ class Techydeals: FinalExtractorImpl() {
 
         return VideoLink(
             videoUrl,
+            "${baseUrl}",
             "https://vodkapr3mium.com/",
             "https://vodkapr3mium.com"
         )
@@ -407,6 +415,7 @@ open class ProcessBigger: FinalExtractorImpl() {
 
         return VideoLink(
             videoUrl,
+            "${baseUrl}",
             "https://processbigger.com/",
             "https://processbigger.com"
         )
@@ -422,6 +431,7 @@ abstract class SimpleAtobExtractor: FinalExtractorImpl() {
 
         return VideoLink(
             videoUrl,
+            "${baseUrl}",
             iFrameData.finalUrl,
             iFrameData.finalUrl
         )
@@ -438,6 +448,7 @@ abstract class SimpleSourceExtractor: FinalExtractorImpl() {
 
         return VideoLink(
             videoUrl,
+            "${baseUrl}",
             iFrameData.finalUrl,
             iFrameData.finalUrl
         )
@@ -483,7 +494,7 @@ class Generic: ExtractorImpl() {
 
         val elink =  ExtractorLink(
             channel.source,
-            "${channel.name} (${channel.language}) ${channel.reputation}",
+            "${channel.name} (${channel.language}) ${channel.reputation} - ${videoLink.parentUrl}",
             videoLink.url,
             referer?:"",
             0,
@@ -582,6 +593,7 @@ interface Extractor{
 
 data class VideoLink(
     val url: String,
+    val parentUrl: String,
     val referrer: String? = null,
     val origin: String? = null
 )
