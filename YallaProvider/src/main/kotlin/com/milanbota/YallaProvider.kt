@@ -170,7 +170,8 @@ class YallaProvider : MainAPI() {
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val dt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        val url = "$mainUrl/matches/$dt"
+        val time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmm"))
+        val url = "$mainUrl/matches/$dt?t=$time"
         val eventz = app.get(url, headers=headers)
 
         val listMatchResponses = object : TypeToken<List<MatchResponse>>() {}.type
