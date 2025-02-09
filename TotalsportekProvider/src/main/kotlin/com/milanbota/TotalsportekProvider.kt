@@ -474,16 +474,23 @@ class Generic: ExtractorImpl() {
 
         val videoLink = getExtractorVideoLink(iframe)?: return null
 
+        val referer = if (videoLink.referrer != null) {
+            val uri = URI(videoLink.referrer)
+            "${uri.scheme}://${uri.host}/"
+        } else null
+
+        val headers = videoLink.getHeaders()
+
         val elink =  ExtractorLink(
             channel.source,
             "${channel.name} (${channel.language}) ${channel.reputation}",
             videoLink.url,
-            videoLink.referrer?:"",
+            referer?:"",
             0,
             isM3u8 = true,
-            headers = videoLink.getHeaders()
+            headers = headers
         )
-        Log.d("TotalSportekPapa", "Loaded videolink from ${channel.url} => ${elink}")
+        Log.d("TotalSportekPapa", "Loaded videolink from ${channel.url} => ${elink} & ${headers}")
 
         return elink
     }
@@ -582,8 +589,10 @@ data class VideoLink(
 fun VideoLink.getHeaders(): Map<String,String>{
     val headers = mutableMapOf<String,String>()
     headers.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36" )
+    val uri = URI(this.origin)
+    val strippedOrigin = "${uri.scheme}://${uri.host}"
     if (origin != null) {
-        headers.put("origin", origin)
+        headers.put("origin", strippedOrigin)
     }
     return headers
 }
