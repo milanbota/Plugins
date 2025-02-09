@@ -574,7 +574,12 @@ abstract class ExtractorImpl : Extractor{
     suspend fun getExtractorVideoLink(iFrameData:WebData) : VideoLink?{
         for (extractor in finalExtractors){
             if (iFrameData.finalUrl.contains(extractor.baseUrl)){
-                return extractor.getExtractorLink(iFrameData)
+                try {
+                    return extractor.getExtractorLink(iFrameData)
+                } catch (ex: Exception){
+                    Log.e("TotalSportekProvider", "Failed to load data for $iFrameData" )
+                }
+
             }
         }
         return null
