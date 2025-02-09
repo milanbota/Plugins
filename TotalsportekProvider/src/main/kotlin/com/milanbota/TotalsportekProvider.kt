@@ -13,6 +13,7 @@ import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.AppUtils.toJson
 import com.lagradost.nicehttp.cookies
 import org.jsoup.nodes.Document
+import java.net.URI
 import java.net.URL
 import java.net.URLDecoder
 import kotlin.text.Regex
@@ -196,7 +197,9 @@ val finalExtractors = listOf<FinalExtractor>(
     Techydeals(),
     Foreverquote(),
     Dynamicfantasy(),
-//    Livesnow()
+    Livesnow(),
+    Newembedplay(),
+    Sportsstreamlives()
 
 )
 
@@ -218,6 +221,10 @@ open class Livesnow: FinalExtractorImpl() {
         )
 
     }
+}
+
+class Newembedplay:  SimpleSourceExtractor(){
+    override val baseUrl = "newembedplay.xyz"
 }
 
 class Foreverquote:  SimpleSourceExtractor(){
@@ -325,6 +332,10 @@ class Techabal: FinalExtractorImpl() {
 
 class Vivosoccer: SimpleSourceExtractor() {
     override val baseUrl = "vivosoccer.xyz"
+}
+
+class Sportsstreamlives: SimpleSourceExtractor(){
+    override val baseUrl = "sportsstreamlives.net"
 }
 
 class Givemereddit: FinalExtractorImpl() {
@@ -454,7 +465,13 @@ class Generic: ExtractorImpl() {
     override suspend fun loadVideoLink(channel: Channel): ExtractorLink? {
         Log.d("TotalSportekPapa", "Loading videolink from ${channel.url}")
 
-        val iframe = loadNestedIFrames(url = channel.url)
+        val iframe =try {
+            loadNestedIFrames(url = channel.url)
+        }
+        catch (ex: Exception){
+            return null
+        }
+
         val videoLink = getExtractorVideoLink(iframe)?: return null
 
         val elink =  ExtractorLink(
@@ -490,6 +507,23 @@ abstract class ExtractorImpl : Extractor{
         }
         else if (iframeUrl.startsWith("//")) {
             return "https:$iframeUrl"
+        }
+        else if (iframeUrl.startsWith("../")) {
+            val url = URI(parentUrl)
+            val path = url.path
+            val pathParts = path.split("/").filter { it.isNotEmpty() }
+
+            val newUrl = if (pathParts.size > 2) {
+                val newPath = pathParts.dropLast(2).joinToString("/")
+                url.resolve("/$newPath").toString() + "/"
+            } else if (pathParts.size > 1){
+                val newPath = pathParts.dropLast(2).joinToString("/")
+                url.resolve("/$newPath").toString()
+            } else {
+                url.scheme + "://" + url.host + "/"
+            }
+
+            return newUrl + iframeUrl.replace("../", "")
         }
         else if (iframeUrl.startsWith("/")) {
             val url = URL(parentUrl)
