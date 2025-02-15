@@ -200,6 +200,7 @@ class YallaProvider : MainAPI() {
         val key = """var\s+u_key\s+=\s*[\"'](.*?)[\"']""".toRegex().find(d)
         val iframeUrlEncoded = key?.groupValues?.get(1)?:""
         val iframeUrl = decodeToken(iframeUrlEncoded)
+        val frameUrl = iframeUrl.ifEmpty { "https://yalla.kora-tv.vip/frame.php" }
 
         val pData = """var\s+p\s+=\s*(.*?);""".toRegex().find(d)
         val p = pData?.groupValues?.get(1)?:""
@@ -210,7 +211,7 @@ class YallaProvider : MainAPI() {
             Channel(
                 it.ch,
                 it.serverNameEn,
-                iframeUrl,
+                frameUrl,
                 pParam = p
             )
         }
