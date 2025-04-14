@@ -75,6 +75,8 @@ class StreamingCommunityProvider : MainAPI() {
         TvType.Movie,
         TvType.TvSeries,
     )
+
+    private val cloudflare = CloudflareKiller()
     private val userAgent =
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Safari/605.1.15"
     private val gson = Gson()
@@ -93,7 +95,7 @@ class StreamingCommunityProvider : MainAPI() {
     )
 
     suspend fun loadMainPage(page: Int, request: MainPageRequest): HomePageResponse{
-        val document = app.get(request.data, headers = mapOf("user-agent" to userAgent)).document
+        val document = app.get(request.data, headers = mapOf("user-agent" to userAgent), interceptor = cloudflare).document
         val resultsJson = document.select("#app").attr("data-page")
         val trendingResults = gson.fromJson(resultsJson, FullResponseGson::class.java).props.sliders[0].titles
         val trendingList = mutableListOf<SearchResponse>()
@@ -116,7 +118,7 @@ class StreamingCommunityProvider : MainAPI() {
     suspend fun loadApiData(page: Int, request: MainPageRequest): HomePageResponse{
         val offset = (page-1) * 60
         val url = "${request.data}${if (offset==0) "" else "&offset="+offset}"
-        val document = app.get(url, headers = mapOf("user-agent" to userAgent))
+        val document = app.get(url, headers = mapOf("user-agent" to userAgent), interceptor = cloudflare)
         val titles = document.parsed<PropsGson>()
 
         val events = mutableListOf<SearchResponse>()
@@ -163,7 +165,7 @@ class StreamingCommunityProvider : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val queryFormatted = query.replace(" ", "%20")
         val url = "$mainUrl/search?q=$queryFormatted"
-        val document = app.get(url, headers = mapOf("user-agent" to userAgent)).document
+        val document = app.get(url, headers = mapOf("user-agent" to userAgent), interceptor = cloudflare).document
         val resultsJson = document.select("#app").attr("data-page")
         val results = gson.fromJson(resultsJson, FullResponseGson::class.java).props.titles
         val resultsList = mutableListOf<SearchResponse>()
@@ -224,7 +226,7 @@ class StreamingCommunityProvider : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse? {
         Log.d(TAG, "load('${url})'")
-        val document = app.get(url, headers = mapOf("user-agent" to userAgent)).document
+        val document = app.get(url, headers = mapOf("user-agent" to userAgent), interceptor = cloudflare).document
         val resultJson = document.select("#app").attr("data-page")
         val response = gson.fromJson(resultJson, Response::class.java)
 
@@ -256,7 +258,7 @@ class StreamingCommunityProvider : MainAPI() {
 
                 val seasons = response.props.title.seasons
                 seasons.amap { season ->
-                    val seasonDocument = app.get(url+"/stagione-"+season.number.toString(), headers = mapOf("user-agent" to userAgent)).document
+                    val seasonDocument = app.get(url+"/stagione-"+season.number.toString(), headers = mapOf("user-agent" to userAgent), interceptor = cloudflare).document
                     val resultJsons = seasonDocument.select("#app").attr("data-page")
                     val episodeResponse = gson.fromJson(resultJsons, Response::class.java)
                     for (episode in episodeResponse.props.loadedSeason.episodes) {
@@ -310,13 +312,13 @@ class StreamingCommunityProvider : MainAPI() {
 
         val dataLink= data.replace("watch","iframe")
         Log.d(TAG,"LINK ORIGINALE "+dataLink)
-        val response = app.get(dataLink, headers=headers)
+        val response = app.get(dataLink, headers=headers, interceptor = cloudflare)
         val links = response.document.select("iframe").attr("src")
         Log.d(TAG,"LINK IFRAME "+links)
         val queryParams = getQueryParams(links)
 
         headers.put("referer", "https://streamingcommunity.ooo/")
-        val vixUrl= app.get(links, headers= headers).document.select("script")[4]
+        val vixUrl= app.get(links, headers= headers, interceptor = cloudflare).document.select("script")[4]
 
         val reg = Regex("""window.masterPlaylist\s+=\s+\{.*'token':\s+'(.*?)'.*expires':\s+'(.*?)'.*url:\s+'(.*?)'.*\}.*window""", RegexOption.DOT_MATCHES_ALL)
         val matchResult = reg.find(vixUrl.toString())
