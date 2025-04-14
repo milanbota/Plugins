@@ -67,7 +67,7 @@ fun getImageUrl(mainUrl: String, url: String): String {
 }
 class StreamingCommunityProvider : MainAPI() {
     override var lang = "it"
-    override var mainUrl = "https://streamingcommunity.lu"
+    override var mainUrl = "https://streamingcommunity.airforce"
     override var name = "StreamingCommunity"
     override val hasMainPage = true
     override val hasChromecastSupport = true
