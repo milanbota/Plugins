@@ -157,6 +157,8 @@ class YallaProvider : MainAPI() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun MatchResponse.toSearchResponse() : SearchResponse{
         val ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
+
+        @Suppress("DEPRECATION_ERROR")
         return LiveSearchResponse(
             "${this.time} - ${this.homeEn} - ${this.awayEn}",
             url = "https://ws.kora-api.top/api/matche/${this.id}/en?t=$ts" ,
@@ -191,6 +193,7 @@ class YallaProvider : MainAPI() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun load(url: String): LoadResponse {
+        @Suppress("DEPRECATION_ERROR")
         val match = app.get(url, headers = headers).parsedSafe<SingleMatchResponse>()?: return LiveStreamLoadResponse("", "", "", "")
         val newurl = "https://shoot-yalla.co/live/${match.id}/${match.apiMatcheId}/${match.desc.replace(' ', '-').lowercase()}"
 
@@ -218,7 +221,7 @@ class YallaProvider : MainAPI() {
         }
 
 
-
+        @Suppress("DEPRECATION_ERROR")
         return LiveStreamLoadResponse(
             name = "${match.homeEn} - ${match.awayEn}",
             url = url,

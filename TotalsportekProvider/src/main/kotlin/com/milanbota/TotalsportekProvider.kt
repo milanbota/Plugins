@@ -1,22 +1,18 @@
 package com.milanbota
 
 import android.os.Build
-import android.provider.MediaStore.Video
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.fasterxml.jackson.annotation.*
-import com.lagradost.cloudstream3.utils.*
-import com.lagradost.cloudstream3.*
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.AppUtils.toJson
-import com.lagradost.nicehttp.cookies
 import org.jsoup.nodes.Document
 import java.net.URI
 import java.net.URL
 import java.net.URLDecoder
-import kotlin.text.Regex
 
 data class Match(
     val date: String,
@@ -56,6 +52,7 @@ class TotalsportekProvider : MainAPI() {
     )
 
     private fun Match.toSearchResponse() : SearchResponse{
+        @Suppress("DEPRECATION_ERROR")
         return LiveSearchResponse(
             "${this.date} - ${this.match}",
             url = this.url ,
@@ -128,13 +125,11 @@ class TotalsportekProvider : MainAPI() {
             )
         }.filterNotNull()
 
-        val chList = channels.map{ ch -> ch.url }.joinToString("<br/>" )
-        Log.d("TotalSportek", "channels=> ${channels.map{it.url}}")
-
         val posterUrl = if(images.size>0){
             images[0]
         }else ""
 
+        @Suppress("DEPRECATION_ERROR")
         return LiveStreamLoadResponse(
             name = "${homeTeam} - ${AwayTeam}",
             url = url,
@@ -204,27 +199,6 @@ val finalExtractors = listOf<FinalExtractor>(
 
 )
 
-open class Livesnow: FinalExtractorImpl() {
-    override val baseUrl = "livesnow.me"
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    override suspend fun getExtractorLink(iFrameData:WebData): VideoLink? {
-
-        val encodedScriptRegex = """document\.write\(unescape\([\"'](.*?)[\"']""".toRegex().find(iFrameData.document.data())
-        val encodedScript = encodedScriptRegex?.groupValues?.get(1)?:return null
-        val decoded = URLDecoder.decode(encodedScript, Charsets.UTF_8)
-        val videoUrl = """src\s*:\s*[\"'](.*?)[\"']""".toRegex().find(decoded)?.groupValues?.get(1)?.replace(" ", "%20")?:return null
-
-        return VideoLink(
-            "http:${videoUrl}",
-            "${baseUrl}",
-            "http://livesnow.me/",
-            "http://livesnow.me"
-        )
-
-    }
-}
-
 class Newembedplay:  SimpleSourceExtractor(){
     override val baseUrl = "newembedplay.xyz"
 }
@@ -243,27 +217,6 @@ class Livestreams:  SimpleSourceExtractor(){
 
 class PapaPlay: SimpleAtobExtractor(){
     override val baseUrl = "live.papahd-player.click"
-}
-
-class Flstvonline : SimpleAtobExtractor(){
-    override val baseUrl = "flstv.online"
-}
-
-class Gameavenue: SimpleSourceExtractor() {
-    override val baseUrl = "gameavenue.co"
-
-    override suspend fun getExtractorLink(iFrameData:WebData): VideoLink? {
-
-        val videoUrl = VideoLinkParser.findUrlDirectSource(iFrameData.document.selectFirst("script:containsData(videojs)")?.data()?:"") ?: return null
-
-        return VideoLink(
-            videoUrl,
-            "${baseUrl}",
-            iFrameData.finalUrl,
-            iFrameData.finalUrl
-        )
-
-    }
 }
 
 class CookieWebPlay: SimpleSourceExtractor() {
@@ -307,7 +260,7 @@ class Redditf: SimpleAtobExtractor() {
 
         return VideoLink(
             videoUrl,
-            "${baseUrl}",
+            baseUrl,
             iFrameData.finalUrl,
             iFrameData.finalUrl
         )
@@ -492,6 +445,7 @@ class Generic: ExtractorImpl() {
 
         val headers = videoLink.getHeaders()
 
+        @Suppress("DEPRECATION_ERROR")
         val elink =  ExtractorLink(
             channel.source,
             "${channel.name} (${channel.language}) ${channel.reputation} - ${videoLink.parentUrl}",
