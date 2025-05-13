@@ -60,14 +60,13 @@ data class ResponseDataGson(
     val titles: List<TitleGson>
 )
 
-fun getImageUrl(mainUrl: String, url: String): String {
-    val cdnprefix = mainUrl.replace("streamingcommunity", "cdn.streamingcommunity")
-    val poster = "$cdnprefix/images/$url"
-    return poster
-}
+
+
 class StreamingCommunityProvider : MainAPI() {
     override var lang = "it"
-    override var mainUrl = "https://streamingcommunity.spa"
+    override var mainUrl = "https://streamingunity.to/en"
+    var apiUrl = "https://streamingunity.to"
+    val cdnprefix = mainUrl.replace("streamingunity", "cdn.streamingunity").replace("/en", "")
     override var name = "StreamingCommunity"
     override val hasMainPage = true
     override val hasChromecastSupport = true
@@ -76,7 +75,7 @@ class StreamingCommunityProvider : MainAPI() {
         TvType.TvSeries,
     )
 
-    private val cloudflare = CloudflareKiller()
+//    private val cloudflare = CloudflareKiller()
     private val userAgent =
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Safari/605.1.15"
     private val gson = Gson()
@@ -85,17 +84,17 @@ class StreamingCommunityProvider : MainAPI() {
     override val mainPage = mainPageOf(
         "$mainUrl/film" to "Movies",
         "$mainUrl/serie-tv/" to "Series",
-        "$mainUrl/api/archive?genre[]=24" to "Documentaries",
-        "$mainUrl/api/archive?type=movie&genre[]=2" to "Crime Movies",
-        "$mainUrl/api/archive?type=movie&genre[]=4" to "Action Movies",
-        "$mainUrl/api/archive?type=movie&genre[]=5" to "Thriller Movies",
-        "$mainUrl/api/archive?type=movie&genre[]=6" to "Mystery Movies",
-        "$mainUrl/api/archive?genre[]=22" to "History",
+        "$apiUrl/api/archive?genre[]=24" to "Documentaries",
+        "$apiUrl/api/archive?type=movie&genre[]=2" to "Crime Movies",
+        "$apiUrl/api/archive?type=movie&genre[]=4" to "Action Movies",
+        "$apiUrl/api/archive?type=movie&genre[]=5" to "Thriller Movies",
+        "$apiUrl/api/archive?type=movie&genre[]=6" to "Mystery Movies",
+        "$apiUrl/api/archive?genre[]=22" to "History",
 //        "$mainUrl/archivio?genre[]=4&type=movie" to "Action"
     )
 
     suspend fun loadMainPage(page: Int, request: MainPageRequest): HomePageResponse{
-        val document = app.get(request.data, headers = mapOf("user-agent" to userAgent), interceptor = cloudflare).document
+        val document = app.get(request.data, headers = mapOf("user-agent" to userAgent)).document
         val resultsJson = document.select("#app").attr("data-page")
         val trendingResults = gson.fromJson(resultsJson, FullResponseGson::class.java).props.sliders[0].titles
         val trendingList = mutableListOf<SearchResponse>()
@@ -118,7 +117,7 @@ class StreamingCommunityProvider : MainAPI() {
     suspend fun loadApiData(page: Int, request: MainPageRequest): HomePageResponse{
         val offset = (page-1) * 60
         val url = "${request.data}${if (offset==0) "" else "&offset="+offset}"
-        val document = app.get(url, headers = mapOf("user-agent" to userAgent), interceptor = cloudflare)
+        val document = app.get(url, headers = mapOf("user-agent" to userAgent))
         val titles = document.parsed<PropsGson>()
 
         val events = mutableListOf<SearchResponse>()
@@ -135,10 +134,14 @@ class StreamingCommunityProvider : MainAPI() {
         } else return loadMainPage(page,request)
     }
 
+    fun getImageUrl(url: String): String {
+        val poster = "$cdnprefix/images/$url"
+        return poster
+    }
+
     private fun TitleGson.toSearchResult(): SearchResponse? {
         val title = this.name
         val link = "$mainUrl/titles/${this.id}-${this.slug}"
-        val cdnprefix = mainUrl.replace("streamingcommunity", "cdn.streamingcommunity")
         val posterImage = this.images.find { it.type == "poster" }
         val posterUrl = if (posterImage != null) {
             "${cdnprefix}/images/${posterImage.filename}"
@@ -165,7 +168,7 @@ class StreamingCommunityProvider : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val queryFormatted = query.replace(" ", "%20")
         val url = "$mainUrl/search?q=$queryFormatted"
-        val document = app.get(url, headers = mapOf("user-agent" to userAgent), interceptor = cloudflare).document
+        val document = app.get(url, headers = mapOf("user-agent" to userAgent)).document
         val resultsJson = document.select("#app").attr("data-page")
         val results = gson.fromJson(resultsJson, FullResponseGson::class.java).props.titles
         val resultsList = mutableListOf<SearchResponse>()
@@ -226,12 +229,12 @@ class StreamingCommunityProvider : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse? {
         Log.d(TAG, "load('${url})'")
-        val document = app.get(url, headers = mapOf("user-agent" to userAgent), interceptor = cloudflare).document
+        val document = app.get(url, headers = mapOf("user-agent" to userAgent)).document
         val resultJson = document.select("#app").attr("data-page")
         val response = gson.fromJson(resultJson, Response::class.java)
 
         val plot= response.props.title.plot
-        val poster =getImageUrl(mainUrl, response.props.title.images?.get(3)?.filename ?: "")
+        val poster =getImageUrl(response.props.title.images?.get(3)?.filename ?: "")
 //        val actors = response.props.title.actors.map {
 //            ActorData(com.lagradost.cloudstream3.Actor(it.name))
 //        }
@@ -258,12 +261,12 @@ class StreamingCommunityProvider : MainAPI() {
 
                 val seasons = response.props.title.seasons
                 seasons.amap { season ->
-                    val seasonDocument = app.get(url+"/stagione-"+season.number.toString(), headers = mapOf("user-agent" to userAgent), interceptor = cloudflare).document
+                    val seasonDocument = app.get(url+"/season-"+season.number.toString(), headers = mapOf("user-agent" to userAgent)).document
                     val resultJsons = seasonDocument.select("#app").attr("data-page")
                     val episodeResponse = gson.fromJson(resultJsons, Response::class.java)
                     for (episode in episodeResponse.props.loadedSeason.episodes) {
                         val href = mainUrl+"/watch/"+response.props.title.id+"?episode_id="+episode.id
-                        val postImage = getImageUrl(mainUrl, episode.images.firstOrNull()?.filename?: "")
+                        val postImage = getImageUrl(episode.images.firstOrNull()?.filename?: "")
                         episodesList.add(newEpisode(href) {
                             this.name = episode.name
                             this.season = season.number
@@ -312,13 +315,13 @@ class StreamingCommunityProvider : MainAPI() {
 
         val dataLink= data.replace("watch","iframe")
         Log.d(TAG,"LINK ORIGINALE "+dataLink)
-        val response = app.get(dataLink, headers=headers, interceptor = cloudflare)
+        val response = app.get(dataLink, headers=headers)
         val links = response.document.select("iframe").attr("src")
         Log.d(TAG,"LINK IFRAME "+links)
         val queryParams = getQueryParams(links)
 
         headers.put("referer", "https://streamingcommunity.ooo/")
-        val vixUrl= app.get(links, headers= headers, interceptor = cloudflare).document.select("script")[4]
+        val vixUrl= app.get(links, headers= headers).document.select("script")[4]
 
         val reg = Regex("""window.masterPlaylist\s+=\s+\{.*'token':\s+'(.*?)'.*expires':\s+'(.*?)'.*url:\s+'(.*?)'.*\}.*window""", RegexOption.DOT_MATCHES_ALL)
         val matchResult = reg.find(vixUrl.toString())
