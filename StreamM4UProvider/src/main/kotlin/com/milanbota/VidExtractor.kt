@@ -67,7 +67,7 @@ open class VidExtractor : ExtractorApi() {
                 }
             }
 
-        Log.d("FlowzVidsrc", "List of servers:  $srcrcpList")
+        Log.d("FlowzVidsr", "List of servers:  $srcrcpList")
 
 
 
