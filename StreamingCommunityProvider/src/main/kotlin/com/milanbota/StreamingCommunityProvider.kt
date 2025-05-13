@@ -6,10 +6,6 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.*
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.lagradost.cloudstream3.network.CloudflareKiller
-import com.lagradost.cloudstream3.utils.AppUtils.parseJson
-import com.lagradost.cloudstream3.utils.AppUtils.toJson
-import com.lagradost.nicehttp.cookies
 import java.net.URI
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -336,6 +332,7 @@ class StreamingCommunityProvider : MainAPI() {
             Log.d(TAG,"Video url "+finalUr)
 
             callback.invoke(
+                @Suppress("DEPRECATION_ERROR")
                 ExtractorLink(
                     name,
                     name,

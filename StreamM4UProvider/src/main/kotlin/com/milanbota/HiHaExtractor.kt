@@ -45,6 +45,7 @@ open class HiHaExtractor : ExtractorApi() {
         Log.d("FlowzHiHeExt", "videoUrls => ${videoSources}")
 
         videoSources.amap {
+            @Suppress("DEPRECATION_ERROR")
             callback(ExtractorLink(
                 "aaa",
                 "${mainUrl}/z",

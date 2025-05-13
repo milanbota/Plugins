@@ -218,6 +218,7 @@ class Apl374 : ExtractorImpl(){
             val videoUrl = httpsify(matchResult.groupValues[1])
             Log.d("JokerStreamLoadLink", "Found videolink from $url => $videoUrl")
 
+            @Suppress("DEPRECATION_ERROR")
             return ExtractorLink(
                 "Joker",
                 this.name,
@@ -274,7 +275,7 @@ open class AntenaTime : ExtractorImpl(){
         val origin = "${urlz.protocol}://${urlz.host}${if (urlz.port != -1) ":${urlz.port}" else ""}"
         Log.d("JokerLoadLink", "videoUrl => $url $videoUrl ${data.finalUrl} ${data.lastReferer} $origin")
 
-
+        @Suppress("DEPRECATION_ERROR")
         return ExtractorLink(
             name,
             url,
@@ -305,6 +306,7 @@ class Lavents: ExtractorImpl() {
             val videoUrl = httpsify(matchResult.groupValues[1])
             Log.d("JokerStreamLoadLink", "Found videolink from $url => $videoUrl")
 
+            @Suppress("DEPRECATION_ERROR")
             return ExtractorLink(
                 name,
                 url,
@@ -352,6 +354,7 @@ class Onstream: ExtractorImpl() {
         val videoUrl = chars.joinToString("")
         Log.d("JokerStreamLoadLink", "Found videolink from $url => $videoUrl")
 
+        @Suppress("DEPRECATION_ERROR")
             return ExtractorLink(
                 "Joker",
                 this.name,

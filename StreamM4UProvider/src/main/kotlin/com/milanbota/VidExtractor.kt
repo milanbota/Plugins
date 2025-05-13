@@ -81,6 +81,7 @@ open class VidExtractor : ExtractorApi() {
                 Log.d("FlowzVidsrc", "invoking => $decodedUrl")
 
                 callback.invoke(
+                    @Suppress("DEPRECATION_ERROR")
                     ExtractorLink(
                         this.name,
                         this.name,

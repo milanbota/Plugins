@@ -40,6 +40,7 @@ open class HiHiHeHeExtractor : ExtractorApi() {
         Log.d("FlowzHiHeExt", "videoUrl => ${newm3u8link}")
 
         if (newm3u8link != null) {
+            @Suppress("DEPRECATION_ERROR")
             callback(ExtractorLink(
                 name,
                 name,

@@ -238,6 +238,7 @@ class YallaProvider : MainAPI() {
         val encodedUrl = key?.groupValues?.get(1)?: return null
         val url = decodeToken(encodedUrl)
 
+        @Suppress("DEPRECATION_ERROR")
         return ExtractorLink(
             "s",
             "${channel.name}",
