@@ -231,7 +231,7 @@ class YallaProvider : MainAPI() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun getVideoLink(channel: Channel) : ExtractorLink? {
-        val headerz = headers + mapOf("Referer" to "https://shoot-yalla.co/")
+        val headerz = headers + mapOf("Referer" to "https://shoot-yalla.me/")
         val data = app.get(channel.getIframeUrl(), headers=headerz).text
 
         val key = """var\s+token\s+=\s*[\"'](.*?)[\"']""".toRegex().find(data)
