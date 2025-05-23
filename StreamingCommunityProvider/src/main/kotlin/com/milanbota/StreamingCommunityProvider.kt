@@ -43,7 +43,7 @@ data class TitleGson(
     val slug: String,
     val name: String,
     val type: String,
-    val score: String,
+    val score: String?,
     @SerializedName("sub_ita") val subIta: Int,
     @SerializedName("last_air_date") val lastAirDate: String? = null,
     @SerializedName("seasons_count") val seasonsCount: Int,
