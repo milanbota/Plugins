@@ -78,8 +78,8 @@ class StreamingCommunityProvider : MainAPI() {
     private val TAG = "StreamingCommunity"
 
     override val mainPage = mainPageOf(
-        "$mainUrl/film" to "Movies",
-        "$mainUrl/serie-tv/" to "Series",
+        "$mainUrl/movies" to "Movies",
+        "$mainUrl/tv-shows" to "Series",
         "$apiUrl/api/archive?genre[]=24" to "Documentaries",
         "$apiUrl/api/archive?type=movie&genre[]=2" to "Crime Movies",
         "$apiUrl/api/archive?type=movie&genre[]=4" to "Action Movies",
