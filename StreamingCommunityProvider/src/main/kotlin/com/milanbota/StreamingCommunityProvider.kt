@@ -60,9 +60,9 @@ data class ResponseDataGson(
 
 class StreamingCommunityProvider : MainAPI() {
     override var lang = "it"
-    override var mainUrl = "https://streamingunity.to/en"
-    var apiUrl = "https://streamingunity.to"
-    val cdnprefix = mainUrl.replace("streamingunity", "cdn.streamingunity").replace("/en", "")
+    override var mainUrl = "https://streamingcommunityz.city/en"
+    var apiUrl = "https://streamingcommunityz.city"
+    val cdnprefix = mainUrl.replace("streamingcommunityz", "cdn.streamingcommunityz").replace("/en", "")
     override var name = "StreamingCommunity"
     override val hasMainPage = true
     override val hasChromecastSupport = true
